@@ -3,12 +3,12 @@ from vector import Vector
 
 
 def test_1_function(x: Vector) -> float:
-    assert x.n() == 2
+    assert len(x) == 2
     return 2 * ((x[0] - 2) ** 2) + 4 * ((x[1] - 4) ** 2)
 
 
 def test_1_grad(x: Vector) -> Vector:
-    assert x.n() == 2
+    assert len(x) == 2
     return Vector([(x[0] - 2) * 6, (x[1] - 4) * 8])
 
 
