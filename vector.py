@@ -5,8 +5,12 @@ from math import sqrt
 class Vector:
     coords: List[float]
 
-    def __init__(self, coords: List[float]):
-        self.coords = coords
+    # def __init__(self, coords: List[float]):
+    #     self.coords = coords
+
+    def __init__(self, *args):
+        assert all(map(lambda arg: isinstance(arg, float) or isinstance(arg, int), args))
+        self.coords = list(args)
 
     def __repr__(self):
         return str(self.coords)
