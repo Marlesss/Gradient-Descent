@@ -33,14 +33,12 @@ def golden_section_method(x: Vector, grad: Callable[[Vector], Vector], f: Callab
 
 def gradient_descent_linear(x0: Vector, grad: Callable[[Vector], Vector],
                             f: Callable[[Vector], float]) -> (bool, [Vector]):
-    eps_dot = Vector([EPS for _ in range(len(x0))])
     dots = [x0]
     prev_x = x0
     for _ in range(ITER_LIMIT):
         new_x = golden_section_method(prev_x, grad, f)
         dots.append(new_x)
 
-        # изменить на сравнение длины вектора
         if (new_x - prev_x).vector_length() < EPS:
             return True, dots
         prev_x = new_x
@@ -48,14 +46,12 @@ def gradient_descent_linear(x0: Vector, grad: Callable[[Vector], Vector],
 
 
 def gradient_descent_constant(x0: Vector, alph: float, grad: Callable[[Vector], Vector]) -> (bool, [Vector]):
-    eps_dot = Vector([EPS for _ in range(len(x0))])
     dots = [x0]
     prev_x = x0
     for _ in range(ITER_LIMIT):
         new_x = prev_x - alph * grad(prev_x)
         dots.append(new_x)
 
-        # изменить на сравнение длины вектора
         if (new_x - prev_x).vector_length() < EPS:
             return True, dots
         prev_x = new_x
