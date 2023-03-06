@@ -33,7 +33,7 @@ def golden_section_method(x: Vector, grad: Callable[[Vector], Vector], f: Callab
 
 def gradient_descent_linear(x0: Vector, grad: Callable[[Vector], Vector],
                             f: Callable[[Vector], float]) -> (bool, [Vector]):
-    eps_dot = Vector([EPS for _ in range(len(x0))])
+    eps_dot = Vector([EPS for _ in range(x0.n())])
     dots = [x0]
     prev_x = x0
     for _ in range(ITER_LIMIT):
@@ -48,7 +48,7 @@ def gradient_descent_linear(x0: Vector, grad: Callable[[Vector], Vector],
 
 
 def gradient_descent_constant(x0: Vector, alph: float, grad: Callable[[Vector], Vector]) -> (bool, [Vector]):
-    eps_dot = Vector([EPS for _ in range(len(x0))])
+    eps_dot = Vector([EPS for _ in range(x0.n())])
     dots = [x0]
     prev_x = x0
     for _ in range(ITER_LIMIT):

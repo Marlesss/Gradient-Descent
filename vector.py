@@ -1,4 +1,5 @@
 from typing import List
+from math import sqrt
 
 
 class Vector:
@@ -11,15 +12,17 @@ class Vector:
         return str(self.coords)
 
     def __len__(self):
-        # TODO: изменить на длину вектора
+        return sqrt(sum(map(lambda x: x ** 2, self.coords)))
+
+    def n(self):
         return len(self.coords)
 
     def __getitem__(self, item):
-        if isinstance(item, int) and 0 <= item < len(self):
+        if isinstance(item, int) and 0 <= item < self.n():
             return self.coords[item]
 
     def coords_op(self, func):
-        return [func(i) for i in range(len(self.coords))]
+        return [func(i) for i in range(self.n())]
 
     def __neg__(self):
         return Vector(self.coords_op(lambda i: -self.coords[i]))
@@ -29,7 +32,7 @@ class Vector:
 
     def __add__(self, other):
         assert isinstance(other, Vector)
-        assert len(self.coords) == len(other.coords)
+        assert self.n() == other.n()
         return Vector(self.coords_op(lambda i: self.coords[i] + other.coords[i]))
 
     def __sub__(self, other):
@@ -46,10 +49,10 @@ class Vector:
     # Compare
 
     def __eq__(self, other):
-        return isinstance(other, Vector) and len(self) == len(other) and all(
+        return isinstance(other, Vector) and self.n() == other.n() and all(
             self.coords_op(lambda i: self[i] == other[i]))
 
     def __lt__(self, other):
-        if isinstance(other, Vector) and len(self) == len(other):
+        if isinstance(other, Vector) and self.n() == other.n():
             return all(self.coords_op(lambda i: self[i] < other[i]))
         return False
