@@ -1,21 +1,27 @@
 import numpy as np
 
+LOW_BOUND, HIGH_BOUND = -100, 100
+
 
 def generate_function(n, cond):
     min_singular = 1
     max_singular = min_singular * cond
-    s = np.diag(-np.sort(-np.insert(np.append((max_singular - min_singular) * np.random.sample(n - 2)
-                                              + min_singular, min_singular), 0, max_singular)))  # degscending sort
-    q, r = np.linalg.qr(np.random.sample(n, n))
-    q_t = q.transpose()
-    a = np.matmul(q, s, q_t)  # maybe there are only 2 args
-    b = np.random.sample(n)
-    c = np.random.sample()
+    s = np.diag(
+        -np.sort(
+            -np.insert(
+                np.append(
+                    (max_singular - min_singular) * np.random.sample(n - 2) + min_singular,
+                    min_singular),
+                0,
+                max_singular)
+        )
+    )
+    q, _ = np.linalg.qr(np.random.sample(n, n) * np.random.randint(LOW_BOUND, HIGH_BOUND))
+    a = np.matmul(np.matmul(q, s), q.T)
+    b = np.random.sample(n) * np.random.randint(LOW_BOUND, HIGH_BOUND)
+    c = np.random.sample() * np.random.randint(LOW_BOUND, HIGH_BOUND)
 
     def f(x: np.ndarray):
-        return np.dot(x.transpose(), a, x) + np.dot(b, x) + c
-
-
+        return np.dot(np.dot(x.T, a), x) + np.dot(b, x) + c
     return f
 
-generate_function(3, 2)
