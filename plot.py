@@ -1,6 +1,5 @@
 from typing import Callable
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 import numpy as np
 from vector import Vector
 
@@ -38,47 +37,22 @@ def show_1arg_func(func: Callable[[Vector], float], dots: [Vector]):
     plt.show()
 
 
-def show_2arg_func(func: Callable[[Vector, Vector], float], dots: [Vector]):
-    x_line, y_line = unzip_dots(dots)
-    k = 2
-    grid = np.mgrid[min(x_line) / k:max(x_line) * k:complex(0, GRID_SIZE),
-           min(y_line) / k:max(y_line) * k:complex(0, GRID_SIZE)].reshape(2, -1).T
-    print(grid)
-    func_values = np.array(list(map(func, grid)))
-    minz, maxz = min(func_values), max(func_values)
-    medz = (minz + maxz) / 5
-
-    subplot = plt.subplot()
-    for i in range(GRID_SIZE ** 2):
-        z = func_values[i]
-        if z < medz:
-            c = (z - minz) / (medz - minz)
-            subplot.plot([grid.T[0][i]], [grid.T[1][i]], "ro", color=(0, 1 - c, c))
-        else:
-            c = (z - medz) / (maxz - medz)
-            subplot.plot([grid.T[0][i]], [grid.T[1][i]], "ro", color=(c, 0, 1 - c))
-    subplot.plot(x_line, y_line, "ro", color=(1, 1, 1))
-    subplot.plot(x_line, y_line, linewidth=1, color=(1, 1, 1))
+def show_2arg_func(f: Callable[[np.ndarray], float], dots: np.ndarray, dots_show: bool = True, levels: bool = False):
+    x_min, x_max = min(dots[:, 0]), max(dots[:, 0])
+    y_min, y_max = min(dots[:, 1]), max(dots[:, 1])
+    x_space = np.linspace(x_min - (x_max - x_min) / 10, x_max + (x_max - x_min) / 10, GRID_SIZE)
+    y_space = np.linspace(y_min - (y_max - y_min) / 10, y_max + (y_max - y_min) / 10, GRID_SIZE)
+    if dots_show:
+        plt.plot(dots[:, 0], dots[:, 1], 'o-')
+    if levels:
+        plt.contour(x_space, y_space, [[f(np.array([x, y])) for x in x_space] for y in y_space],
+                    levels=sorted([f(dot) for dot in dots]))
+    else:
+        plt.contour(x_space, y_space, [[f(np.array([x, y])) for x in x_space] for y in y_space])
     plt.show()
 
-# def func(x: Vector) -> float:
-#     assert len(x) == 1
-#     return x[0] ** 2
 
-
-# dots = [Vector(-10, 1), Vector(-2, 2), Vector(10, 100)]
-
-
-# dots = [[20, 20], [5.318943338572119, 2.6002291420114005], [2.3215306705179453, 4.285782032031778],
-#         [2.0592856709478977, 3.974998164989072], [2.00574344289354, 4.005104460614513],
-#         [2.001059008973999, 3.9995534327991282], [2.0001025940580357, 4.000091172695428],
-#         [2.0000189168814164, 3.9999920236948685], [2.0000018319421162, 4.00000162885025],
-#         [2.0000003378495244, 3.999999857576605]]
-#
-#
-# def test_1_function(x: Vector) -> float:
-#     assert len(x) == 2
-#     return 2 * ((x[0] - 2) ** 2) + 4 * ((x[1] - 4) ** 2)
-#
-#
-# show_2arg_func(test_1_function, dots)
+def show_2arg_func_contour(func: Callable[[np.ndarray], float], x_min=-100, x_max=100, y_min=-100, y_max=100):
+    grid = np.mgrid[x_min:x_max:complex(0, GRID_SIZE),
+           y_min:y_max:complex(0, GRID_SIZE)].reshape(2, -1).T
+    show_2arg_func(func, grid, dots_show=False, levels=True)
