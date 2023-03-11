@@ -18,9 +18,7 @@ def generate_function(n, cond):
     )
     q, _ = np.linalg.qr(np.random.sample((n, n)))
     a = np.matmul(np.matmul(q, s), q.T)
-    print(a)
     b = np.random.sample(n) * np.random.randint(LOW_BOUND, HIGH_BOUND)
-    print(b)
     c = np.random.sample() * np.random.randint(LOW_BOUND, HIGH_BOUND)
 
     def grad(x: np.ndarray):
