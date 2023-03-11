@@ -16,12 +16,19 @@ def generate_function(n, cond):
                 max_singular)
         )
     )
-    q, _ = np.linalg.qr(np.random.sample(n, n) * np.random.randint(LOW_BOUND, HIGH_BOUND))
+    q, _ = np.linalg.qr(np.random.sample((n, n)))
     a = np.matmul(np.matmul(q, s), q.T)
+    print(a)
     b = np.random.sample(n) * np.random.randint(LOW_BOUND, HIGH_BOUND)
+    print(b)
     c = np.random.sample() * np.random.randint(LOW_BOUND, HIGH_BOUND)
+
+    def grad(x: np.ndarray):
+        return np.add(2 * np.matmul(a, x.T), b)
 
     def f(x: np.ndarray):
         return np.dot(np.dot(x.T, a), x) + np.dot(b, x) + c
-    return f
+
+    return f, grad
+
 
