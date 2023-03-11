@@ -9,12 +9,12 @@ def test_1_function(x: Vector) -> float:
 
 def test_1_grad(x: Vector) -> Vector:
     assert len(x) == 2
-    return Vector([(x[0] - 2) * 6, (x[1] - 4) * 8])
+    return Vector((x[0] - 2) * 6, (x[1] - 4) * 8)
 
 
 def main():
-    # ans, dots = gradient_descent_linear(Vector([20, 20]), test_1_grad, test_1_function)
-    ans, dots = gradient_descent_constant(Vector([20, 20]), 0.1, test_1_grad)
+    # ans, dots = gradient_descent_linear(Vector(20, 20), test_1_grad, test_1_function)
+    ans, dots = gradient_descent_constant(Vector(20, 20), 0.1, test_1_grad)
     if ans:
         print(f"Сошлось за {len(dots)} шагов")
         print(dots)
