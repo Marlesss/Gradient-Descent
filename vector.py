@@ -5,9 +5,6 @@ from math import sqrt
 class Vector:
     coords: List[float]
 
-    # def __init__(self, coords: List[float]):
-    #     self.coords = coords
-
     def __init__(self, *args: Union[int, float]):
         assert all(map(lambda arg: isinstance(arg, float) or isinstance(arg, int), args))
         self.coords = list(args)
@@ -29,26 +26,26 @@ class Vector:
         return [func(i) for i in range(len(self.coords))]
 
     def __neg__(self):
-        return Vector(self.coords_op(lambda i: -self.coords[i]))
+        return Vector(*self.coords_op(lambda i: -self.coords[i]))
 
     def __abs__(self):
-        return Vector(self.coords_op(lambda i: abs(self[i])))
+        return Vector(*self.coords_op(lambda i: abs(self[i])))
 
     def __add__(self, other):
         assert isinstance(other, Vector)
         assert len(self.coords) == len(other.coords)
-        return Vector(self.coords_op(lambda i: self.coords[i] + other.coords[i]))
+        return Vector(*self.coords_op(lambda i: self.coords[i] + other.coords[i]))
 
     def __sub__(self, other):
         return self + (-other)
 
     def __mul__(self, other):
         if isinstance(other, float) or isinstance(other, int):
-            return Vector(self.coords_op(lambda i: self.coords[i] * other))
+            return Vector(*self.coords_op(lambda i: self.coords[i] * other))
 
     def __rmul__(self, other):
         if isinstance(other, float) or isinstance(other, int):
-            return Vector(self.coords_op(lambda i: self.coords[i] * other))
+            return Vector(*self.coords_op(lambda i: self.coords[i] * other))
 
     # Compare
 
