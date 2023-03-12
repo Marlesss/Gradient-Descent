@@ -6,36 +6,6 @@ from vector import Vector
 GRID_SIZE = 100
 
 
-def wrap_func(func: Callable[[Vector], float]) -> Callable[[[float]], float]:
-    def wrapped_func(*args) -> float:
-        x = Vector(*args)
-        return func(x)
-
-    return wrapped_func
-
-
-def unzip_dots(dots: [Vector]) -> [[float]]:
-    if len(dots) == 0:
-        return None
-    n = len(dots[0])
-    ans = [[] for _ in range(n)]
-    for dot in dots:
-        for i in range(n):
-            ans[i].append(dot[i])
-    return ans
-
-
-def show_1arg_func(func: Callable[[Vector], float], dots: [Vector]):
-    subplot = plt.subplot()
-    min_x = min(map(lambda dot: dot[0], dots))
-    max_x = max(map(lambda dot: dot[0], dots))
-    t = np.linspace(min_x, max_x, GRID_SIZE)
-    s = np.vectorize(wrap_func(func))(t)
-    subplot.plot(t, s)
-    subplot.plot(*unzip_dots(dots))
-    subplot.grid()
-    plt.show()
-
 
 def show_2arg_func(f: Callable[[np.ndarray], float], dots: np.ndarray, dots_show: bool = True, levels: bool = False):
     x_min, x_max = min(dots[:, 0]), max(dots[:, 0])

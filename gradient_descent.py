@@ -8,14 +8,31 @@ EPS = 10 ** -3
 PHI = (1 + 5 ** 0.5) / 2
 
 
-def golden_section_method(x: np.ndarray, grad: Callable[[np.ndarray], np.ndarray],
-                          f: Callable[[np.ndarray], float]) -> float:
+def first_wolfe_condition(x: np.ndarray, gradient: np.ndarray, alpha: float,
+                          c1: float, grad: Callable[[np.ndarray], np.ndarray],
+                          f: Callable[[np.ndarray], float]) -> bool:
+    if f(x - alpha * gradient) <= f(x) + c1 * alpha * np.dot(grad(x), gradient):
+        return True
+    return False
+
+
+def second_wolfe_condition(x: np.ndarray, gradient: np.ndarray, alpha: float,
+                           c2: float, grad: Callable[[np.ndarray], np.ndarray]) -> bool:
+    if np.dot(grad(x - alpha * gradient), gradient) >= c2 * np.dot(grad(x), gradient):
+        return True
+    return False
+
+
+def golden_section_method_with_wolfe_conditions(x: np.ndarray, grad: Callable[[np.ndarray], np.ndarray],
+                                                f: Callable[[np.ndarray], float],
+                                                c1: float, c2: float) -> float:
     left = 0
     right = 1
+    gradient = grad(x)
     med_left = left + (right - left) / (PHI + 1)
     med_right = right - (right - left) / (PHI + 1)
-    f_left = f(x - med_left * grad(x))
-    f_right = f(x - med_right * grad(x))
+    f_left = f(x - med_left * gradient)
+    f_right = f(x - med_right * gradient)
 
     while abs(left - right) > EPS:
         if f_left < f_right:
@@ -23,15 +40,60 @@ def golden_section_method(x: np.ndarray, grad: Callable[[np.ndarray], np.ndarray
             med_right = med_left
             f_right = f_left
             med_left = left + (right - left) / (PHI + 1)
-            f_left = f(x - med_left * grad(x))
+            f_left = f(x - med_left * gradient)
         else:
             left = med_left
             med_left = med_right
             f_left = f_right
             med_right = right - (right - left) / (PHI + 1)
-            f_right = f(x - med_right * grad(x))
+            f_right = f(x - med_right * gradient)
+        checkpoint = (left + right) / 2
+        if (first_wolfe_condition(x - checkpoint * gradient, gradient, checkpoint, c1, grad, f)
+                and second_wolfe_condition(x - checkpoint * gradient, gradient, checkpoint, c2, grad)):
+            return checkpoint
 
     return left
+
+
+def golden_section_method(x: np.ndarray, grad: Callable[[np.ndarray], np.ndarray],
+                          f: Callable[[np.ndarray], float]) -> float:
+    left = 0
+    right = 1
+    gradient = grad(x)
+    med_left = left + (right - left) / (PHI + 1)
+    med_right = right - (right - left) / (PHI + 1)
+    f_left = f(x - med_left * gradient)
+    f_right = f(x - med_right * gradient)
+
+    while abs(left - right) > EPS:
+        if f_left < f_right:
+            right = med_right
+            med_right = med_left
+            f_right = f_left
+            med_left = left + (right - left) / (PHI + 1)
+            f_left = f(x - med_left * gradient)
+        else:
+            left = med_left
+            med_left = med_right
+            f_left = f_right
+            med_right = right - (right - left) / (PHI + 1)
+            f_right = f(x - med_right * gradient)
+    return left
+
+
+def gradient_descent_linear_with_wolfe_condition(x0: np.ndarray, grad: Callable[[np.ndarray], np.ndarray],
+                                                 f: Callable[[np.ndarray], float], c1: float, c2: float) -> (
+bool, np.ndarray):
+    dots = np.array([x0])
+    prev_x = x0
+    for _ in range(ITER_LIMIT):
+        grad_value = grad(prev_x)
+        if sqrt((grad_value ** 2).sum()) < EPS:
+            return True, dots
+        new_x = prev_x - golden_section_method_with_wolfe_conditions(prev_x, grad, f, c1, c2) * grad_value
+        dots = np.append(dots, [new_x], 0)
+        prev_x = new_x
+    return False, dots
 
 
 def gradient_descent_linear(x0: np.ndarray, grad: Callable[[np.ndarray], np.ndarray],

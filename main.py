@@ -6,8 +6,9 @@ from plot import *
 def main():
     func, grad = generate_function(2, 2)
     start_dot = np.array([20, 20])
-    # ans, dots = gradient_descent_linear(start_dot, grad, func)
-    ans, dots = gradient_descent_constant(start_dot, 0.03, grad)
+    ans, dots = gradient_descent_linear_with_wolfe_condition(start_dot, grad, func, 0.1, 0.9)
+    #ans, dots = gradient_descent_linear(start_dot, grad, func)
+    #ans, dots = gradient_descent_constant(start_dot, 0.03, grad)
     print(f"{'Сошлось' if ans else 'Не сошлось'} за {len(dots)} шагов")
     print(dots)
     # show_2arg_func(func, dots, levels=False)
