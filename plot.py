@@ -19,10 +19,9 @@ def show_2arg_func(f: Callable[[np.ndarray], float], dots: np.ndarray, dots_show
                     levels=sorted([f(dot) for dot in dots]))
     else:
         plt.contour(x_space, y_space, [[f(np.array([x, y])) for x in x_space] for y in y_space])
-    plt.show()
 
 
 def show_2arg_func_contour(func: Callable[[np.ndarray], float], x_min=-100, x_max=100, y_min=-100, y_max=100):
-    grid = np.mgrid[x_min:x_max:complex(0, GRID_SIZE),
+    dots = np.mgrid[x_min:x_max:complex(0, GRID_SIZE),
            y_min:y_max:complex(0, GRID_SIZE)].reshape(2, -1).T
-    show_2arg_func(func, grid, dots_show=False, levels=True)
+    show_2arg_func(func, dots, dots_show=False, levels=True)
