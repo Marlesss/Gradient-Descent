@@ -8,15 +8,14 @@ EPS = 10 ** -3
 PHI = (1 + 5 ** 0.5) / 2
 
 
-def first_wolfe_condition(x: np.ndarray, antigradient_x: np.ndarray, f_x: float, alpha: float,
-                          c1: float, grad: Callable[[np.ndarray], np.ndarray],
-                          f: Callable[[np.ndarray], float]) -> bool:
-    return f(x + alpha * antigradient_x) <= f_x + c1 * alpha * np.dot(grad(x), antigradient_x)
+def first_wolfe_condition(x: np.ndarray, gradient_x: np.ndarray, direction: np.ndarray, f_x: float, alpha: float,
+                          c1: float, f: Callable[[np.ndarray], float]) -> bool:
+    return f(x + alpha * direction) <= f_x + c1 * alpha * np.dot(gradient_x, direction)
 
 
-def second_wolfe_condition(x: np.ndarray, antigradient_x: np.ndarray, alpha: float,
+def second_wolfe_condition(x: np.ndarray, gradient_x: np.ndarray, direction: np.ndarray, alpha: float,
                            c2: float, grad: Callable[[np.ndarray], np.ndarray]) -> bool:
-    return np.dot(grad(x + alpha * antigradient_x), antigradient_x) >= c2 * np.dot(grad(x), antigradient_x)
+    return np.dot(grad(x + alpha * direction), direction) >= c2 * np.dot(gradient_x, direction)
 
 
 def golden_section_method_with_wolfe_conditions(x: np.ndarray, grad: Callable[[np.ndarray], np.ndarray],
@@ -26,6 +25,7 @@ def golden_section_method_with_wolfe_conditions(x: np.ndarray, grad: Callable[[n
     right = 1
     f_x = f(x)
     gradient_x = grad(x)
+    direction = -grad(x)
     med_left = left + (right - left) / (PHI + 1)
     med_right = right - (right - left) / (PHI + 1)
     f_left = f(x - med_left * gradient_x)
@@ -45,8 +45,8 @@ def golden_section_method_with_wolfe_conditions(x: np.ndarray, grad: Callable[[n
             med_right = right - (right - left) / (PHI + 1)
             f_right = f(x - med_right * gradient_x)
         checkpoint = (left + right) / 2
-        if (first_wolfe_condition(x, -gradient_x, f_x, checkpoint, c1, grad, f)
-                and second_wolfe_condition(x, -gradient_x, checkpoint, c2, grad)):
+        if (first_wolfe_condition(x, gradient_x, direction, f_x, checkpoint, c1, f)
+                and second_wolfe_condition(x, gradient_x, direction, checkpoint, c2, grad)):
             return checkpoint
 
     return left
@@ -56,11 +56,11 @@ def golden_section_method(x: np.ndarray, grad: Callable[[np.ndarray], np.ndarray
                           f: Callable[[np.ndarray], float]) -> float:
     left = 0
     right = 1
-    gradient = grad(x)
+    direction = -grad(x)
     med_left = left + (right - left) / (PHI + 1)
     med_right = right - (right - left) / (PHI + 1)
-    f_left = f(x - med_left * gradient)
-    f_right = f(x - med_right * gradient)
+    f_left = f(x + med_left * direction)
+    f_right = f(x + med_right * direction)
 
     while abs(left - right) > EPS:
         if f_left < f_right:
@@ -68,13 +68,13 @@ def golden_section_method(x: np.ndarray, grad: Callable[[np.ndarray], np.ndarray
             med_right = med_left
             f_right = f_left
             med_left = left + (right - left) / (PHI + 1)
-            f_left = f(x - med_left * gradient)
+            f_left = f(x + med_left * direction)
         else:
             left = med_left
             med_left = med_right
             f_left = f_right
             med_right = right - (right - left) / (PHI + 1)
-            f_right = f(x - med_right * gradient)
+            f_right = f(x + med_right * direction)
     return left
 
 
