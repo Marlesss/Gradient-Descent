@@ -62,7 +62,7 @@ def main():
             conv, dots = gradient_descent(func, grad, x, y)
             print(conv, dots[-1])
             plt.title(f"{gradient_descent_name}\n{func_name}")
-            show_2arg_func(func, dots, levels=True, show=True)
+            show_2arg_func(func, dots, levels=True, label="Траектория градиентного спуска")
 
             cnt = 8
             print(f"Шаги градиентного спуска относительно точки старта ({cnt} точек старта вокруг минимума)")
