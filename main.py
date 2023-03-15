@@ -20,27 +20,28 @@ def get_simple_func(k: float):
     def ploho_grad(x: np.ndarray) -> np.ndarray:
         return np.array([2 * k * x[0], 2 * x[1]])
 
-    return f"{k} * x_1^2 + x_2^2", ploho, ploho_grad
+    return f"f(x_1, x_2) = {k} * x_1^2 + x_2^2", ploho, ploho_grad
 
 
 def get_gradient_descent_constant(alph: float):
     def wrapped(func: Callable[[np.ndarray], float], grad: Callable[[np.ndarray], np.ndarray], x: float, y: float):
         return gradient_descent_constant(np.array([x, y]), alph, grad)
 
-    return f"constant_{alph}", wrapped
+    return f"Градиентный спуск с постоянным шагом({alph})", wrapped
 
 
 def get_gradient_descent_linear():
     def wrapped(func: Callable[[np.ndarray], float], grad: Callable[[np.ndarray], np.ndarray], x: float, y: float):
         return gradient_descent_linear(np.array([x, y]), grad, func)
 
-    return "linear", wrapped
+    return "Градиентный спуск с одномерным поиском (метод золотого сечения)", wrapped
 
 
 def main():
-    for func_name, func, grad in [get_simple_func(1), get_simple_func(10)]:
-        for gradient_descent_name, gradient_descent in [get_gradient_descent_constant(0.3),
-                                                        get_gradient_descent_linear()]:
+    for func_name, func, grad in [get_simple_func(1)]:
+        for gradient_descent_name, gradient_descent in [get_gradient_descent_constant(0.01),
+                                                        get_gradient_descent_constant(0.05),
+                                                        get_gradient_descent_constant(0.3)]:
             print("=========================")
             print(func_name)
             print(gradient_descent_name)
@@ -49,15 +50,22 @@ def main():
             x_min, x_max, y_min, y_max = -100, 100, -100, 100
 
             print("Сходимость относительно точки старта")
-            plt.title(f"Градиентный спуск -- {gradient_descent_name}\nf(x) = {func_name}")
-            x_space = np.linspace(x_min - (x_max - x_min) / 10, x_max + (x_max - x_min) / 10, GRID_SIZE // 100)
-            y_space = np.linspace(y_min - (y_max - y_min) / 10, y_max + (y_max - y_min) / 10, GRID_SIZE // 100)
+            plt.title(f"{gradient_descent_name}\n{func_name}")
+            x_space = np.linspace(x_min, x_max, x_max - x_min + 1)
+            y_space = np.linspace(y_min, y_max, x_max - x_min + 1)
             convergence = [[gradient_descent(func, grad, x, y)[0] for x in x_space] for y in y_space]
             plt.contourf(x_space, y_space, convergence)
             plt.show()
 
+            x, y = 0, 20
+            print(f"Градиентный спуск из точки ({x}, {y})")
+            conv, dots = gradient_descent(func, grad, x, y)
+            print(conv, dots[-1])
+            plt.title(f"{gradient_descent_name}\n{func_name}")
+            show_2arg_func(func, dots, levels=True, show=True)
+
             cnt = 8
-            print(f"Путь спуска относительно точки старта ({cnt} точек старта вокруг минимума)")
+            print(f"Шаги градиентного спуска относительно точки старта ({cnt} точек старта вокруг минимума)")
             plt.title(f"Градиентный спуск -- {gradient_descent_name}\nf(x) = {func_name}")
             r = 50
             all_dots = None
@@ -69,9 +77,7 @@ def main():
                 all_dots = np.concatenate((all_dots, dots)) if all_dots is not None else dots
                 show_2arg_func(func, dots, show=False, color=color)
             show_2arg_func(func, all_dots, dots_show=False, levels=True, contour=False)
-            plt.show()
             print("=========================")
-            exit(0)
 
     # show_2arg_func_slice(func, dots_show=False)
     # show_2arg_func(func, gradient_descent_constant(np.array([20, 20]), 0.20, grad)[1], contour=False, show=True)

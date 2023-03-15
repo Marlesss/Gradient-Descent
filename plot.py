@@ -10,8 +10,8 @@ def show_2arg_func(f: Callable[[np.ndarray], float], dots: np.ndarray, dots_show
                    contour: bool = False, show=True, label: str = None, clabel: bool = False, color: tuple = (1, 0, 0)):
     x_min, x_max = min(dots[:, 0]), max(dots[:, 0])
     y_min, y_max = min(dots[:, 1]), max(dots[:, 1])
-    x_space = np.linspace(x_min - (x_max - x_min) / 10, x_max + (x_max - x_min) / 10, GRID_SIZE)
-    y_space = np.linspace(y_min - (y_max - y_min) / 10, y_max + (y_max - y_min) / 10, GRID_SIZE)
+    x_space = np.linspace(x_min - (x_max - x_min) / 10 - 100, x_max + (x_max - x_min) / 10 + 100, GRID_SIZE)
+    y_space = np.linspace(y_min - (y_max - y_min) / 10 - 100, y_max + (y_max - y_min) / 10 + 100, GRID_SIZE)
     if dots_show:
         if label:
             plt.plot(dots[:, 0], dots[:, 1], 'o-')
@@ -22,7 +22,7 @@ def show_2arg_func(f: Callable[[np.ndarray], float], dots: np.ndarray, dots_show
             # plt.plot(dots[:, 0], dots[:, 1], 'o-')
     if levels:
         contour_set = plt.contour(x_space, y_space, [[f(np.array([x, y])) for x in x_space] for y in y_space],
-                                  levels=sorted(list(set([f(dot) for dot in dots]))), alpha=0.6)
+                                  levels=sorted(list(set([f(dot) for dot in dots]))))
         if clabel:
             plt.clabel(contour_set)
     if contour:

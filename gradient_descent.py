@@ -5,6 +5,7 @@ from math import sqrt
 
 ITER_LIMIT = 50
 EPS = 10 ** -3
+CONVERGENCE_EPS = 10 ** -1
 PHI = (1 + 5 ** 0.5) / 2
 
 
@@ -40,7 +41,7 @@ def gradient_descent_linear(x0: np.ndarray, grad: Callable[[np.ndarray], np.ndar
     prev_x = x0
     for _ in range(ITER_LIMIT):
         grad_value = grad(prev_x)
-        if sqrt((grad_value ** 2).sum()) < EPS:
+        if sqrt((grad_value ** 2).sum()) < CONVERGENCE_EPS:
             return True, dots
         new_x = prev_x - golden_section_method(prev_x, grad, f) * grad_value
         dots = np.append(dots, [new_x], 0)
@@ -54,7 +55,7 @@ def gradient_descent_constant(x0: np.ndarray, alph: float,
     prev_x = x0
     for _ in range(ITER_LIMIT):
         grad_value = grad(prev_x)
-        if sqrt((grad_value ** 2).sum()) < EPS:
+        if sqrt((grad_value ** 2).sum()) < CONVERGENCE_EPS:
             return True, dots
         new_x = prev_x - alph * grad_value
         dots = np.append(dots, [new_x], 0)
