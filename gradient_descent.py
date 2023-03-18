@@ -5,7 +5,7 @@ from math import sqrt
 
 ITER_LIMIT = 50
 EPS = 10 ** -3
-CONVERGENCE_EPS = 10 ** -1
+CONVERGENCE_EPS = 1/2
 PHI = (1 + 5 ** 0.5) / 2
 
 

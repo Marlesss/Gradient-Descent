@@ -1,3 +1,5 @@
+from matplotlib.patches import Patch
+
 from gradient_descent import *
 from square_function import generate_function
 from plot import *
@@ -5,12 +7,16 @@ from pprint import pprint
 import math
 
 
-# def ploho(x: np.ndarray):
-#     return x[0] ** 2
-#
-#
-# def ploho_grad(x: np.ndarray):
-#     return np.array([2 * x[0], 0])
+def get_short_func():
+    def ploho(x: np.ndarray):
+        return x[0] ** 2
+
+
+    def ploho_grad(x: np.ndarray):
+        return np.array([2 * x[0], 0])
+
+    return f"f(x_1, x_2) = x_1^2", ploho, ploho_grad
+
 
 
 def get_simple_func(k: float):
@@ -38,10 +44,13 @@ def get_gradient_descent_linear():
 
 
 def main():
-    for func_name, func, grad in [get_simple_func(1)]:
-        for gradient_descent_name, gradient_descent in [get_gradient_descent_constant(0.01),
-                                                        get_gradient_descent_constant(0.05),
-                                                        get_gradient_descent_constant(0.3)]:
+    for func_name, func, grad in [get_short_func()]:
+        for gradient_descent_name, gradient_descent in [
+            #get_gradient_descent_constant(0.01),
+            #get_gradient_descent_constant(0.05),
+            #get_gradient_descent_constant(0.3)
+            get_gradient_descent_linear()
+        ]:
             print("=========================")
             print(func_name)
             print(gradient_descent_name)
@@ -50,33 +59,39 @@ def main():
             x_min, x_max, y_min, y_max = -100, 100, -100, 100
 
             print("Сходимость относительно точки старта")
-            plt.title(f"{gradient_descent_name}\n{func_name}")
+            plt.title(f"Сходимость относительно точки старта\nдля градиентного спуска")
             x_space = np.linspace(x_min, x_max, x_max - x_min + 1)
             y_space = np.linspace(y_min, y_max, x_max - x_min + 1)
             convergence = [[gradient_descent(func, grad, x, y)[0] for x in x_space] for y in y_space]
             plt.contourf(x_space, y_space, convergence)
+            blue_patch = Patch(color='royalblue', label='Мн-во точек, в которых гр. с. не сошёлся')
+            green_patch = Patch(color='limegreen', label='Мн-во точек, в которых гр. с. сошёлся')
+            plt.legend(handles=[blue_patch, green_patch], loc='upper right', fontsize="xx-small")
             plt.show()
 
             x, y = 0, 20
             print(f"Градиентный спуск из точки ({x}, {y})")
             conv, dots = gradient_descent(func, grad, x, y)
             print(conv, dots[-1])
-            plt.title(f"{gradient_descent_name}\n{func_name}")
-            show_2arg_func(func, dots, levels=True, label="Траектория градиентного спуска")
+            plt.title(f"Градиентный спуск\nиз точки ({x}, {y})")
+            show_2arg_func(func, dots, levels=False, contour=True, label="Траектория градиентного спуска")
 
-            cnt = 8
-            print(f"Шаги градиентного спуска относительно точки старта ({cnt} точек старта вокруг минимума)")
-            plt.title(f"Градиентный спуск -- {gradient_descent_name}\nf(x) = {func_name}")
-            r = 50
-            all_dots = None
-            for i in range(cnt):
-                color = (i / cnt, 1 - i / cnt, 0)
-                x = r * math.cos(math.pi * i / cnt * 2)
-                y = r * math.sin(math.pi * i / cnt * 2)
-                _, dots = gradient_descent(func, grad, x, y)
-                all_dots = np.concatenate((all_dots, dots)) if all_dots is not None else dots
-                show_2arg_func(func, dots, show=False, color=color)
-            show_2arg_func(func, all_dots, dots_show=False, levels=True, contour=False)
+            for r in [5, 20, 50]:
+                cnt = 8
+                all_dots = None
+                print(
+                    f"Шаги градиентного спуска относительно точки старта ({cnt} точек старта на расстоянии {r} от минимума")
+                plt.title(
+                    f"Шаги градиентного спуска относительно\nточки старта ({cnt} точек старта на расстоянии {r} от минимума)")
+                for i in range(cnt):
+                    color = (i / cnt, 1 - i / cnt, 0)
+                    x = r * math.cos(math.pi * i / cnt * 2)
+                    y = r * math.sin(math.pi * i / cnt * 2)
+                    _, dots = gradient_descent(func, grad, x, y)
+                    all_dots = np.concatenate((all_dots, dots)) if all_dots is not None else dots
+                    show_2arg_func(func, dots, show=False, color=color,
+                                   label=f"Траектория гр. с. из т. ({'%.2f' % x}, {'%.2f' % y})")
+                show_2arg_func(func, all_dots, dots_show=False, levels=False, contour=True)
             print("=========================")
 
     # show_2arg_func_slice(func, dots_show=False)
