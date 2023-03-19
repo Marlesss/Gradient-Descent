@@ -1,7 +1,6 @@
 from typing import Callable
 import matplotlib.pyplot as plt
 import numpy as np
-from vector import Vector
 
 GRID_SIZE = 1000
 

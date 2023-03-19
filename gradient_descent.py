@@ -1,5 +1,4 @@
 from typing import Callable
-from vector import Vector
 import numpy as np
 from math import sqrt
 
