@@ -5,7 +5,7 @@ from math import sqrt
 
 ITER_LIMIT = 50
 EPS = 10 ** -3
-CONVERGENCE_EPS = 1/2
+CONVERGENCE_EPS = 1 / 2
 PHI = (1 + 5 ** 0.5) / 2
 
 
@@ -38,18 +38,25 @@ def golden_section_method_with_wolfe_conditions(x: np.ndarray, grad: Callable[[n
             f_right = f_left
             med_left = left + (right - left) / (PHI + 1)
             f_left = f(x + med_left * direction)
+            # if (f_left <= f_x + c1 * med_left * np.dot(grad_value, direction) and
+            #         np.dot(grad(x + med_left * direction), direction) >= c2 * np.dot(grad_value, direction)):
+            #     return med_left
         else:
             left = med_left
             med_left = med_right
             f_left = f_right
             med_right = right - (right - left) / (PHI + 1)
             f_right = f(x + med_right * direction)
+            # if (f_right <= f_x + c1 * med_right * np.dot(grad_value, direction) and
+            #         np.dot(grad(x + med_right * direction), direction) >= c2 * np.dot(grad_value, direction)):
+            #     return med_right
+
         checkpoint = (left + right) / 2
         if (first_wolfe_condition(x, grad_value, direction, f_x, checkpoint, c1, f)
                 and second_wolfe_condition(x, grad_value, direction, checkpoint, c2, grad)):
             return checkpoint
 
-    return (right + left)/2
+    return left
 
 
 def golden_section_method(x: np.ndarray, f: Callable[[np.ndarray], float], grad_value: np.ndarray) -> float:
@@ -74,7 +81,7 @@ def golden_section_method(x: np.ndarray, f: Callable[[np.ndarray], float], grad_
             f_left = f_right
             med_right = right - (right - left) / (PHI + 1)
             f_right = f(x + med_right * direction)
-    return (right + left)/2
+    return left
 
 
 def gradient_descent_linear_with_wolfe_condition(x0: np.ndarray, grad: Callable[[np.ndarray], np.ndarray],
