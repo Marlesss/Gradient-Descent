@@ -91,7 +91,7 @@ def test_4():
             get_gradient_descent_constant(0.05),
             get_gradient_descent_constant(0.3),
             get_gradient_descent_linear(),
-            get_gradient_descent_linear_with_wolfe_condition(0.1, 0.5)
+            get_gradient_descent_linear_with_wolfe_condition(10 ** (-6), 2 * 10 ** (-6))
         ]:
             print("=========================")
             print(func_name)
@@ -151,6 +151,25 @@ def test_4():
             print("=========================")
 
 
+def test_4d():
+    print("Пункт 4d")
+    func_name, func, grad = get_simple_func(10)
+    scale = np.array([1 / 10 ** (1 / 2), 1])
+    scaled_func, scaled_grad = scale_func(scale, func, grad)
+    descent_name, descent = get_gradient_descent_constant(0.3)
+    print(f"Функция {func_name}")
+    print(f"Нормализованная функция: f'(x_1, x_2) = x_1^2 + x_2^2")
+    start_dot = np.array([20, 20])
+    _, dots = descent(func, grad, start_dot)
+    _, scaled_dots = descent(scaled_func, scaled_grad, start_dot)
+    plt.title(f"Градиентный спуск для\nисходной функции f2(x, y) = 10x^2 + y^2")
+    show_2arg_func(func, dots, levels=False, contour=True, label="Траектория градиентного спуска")
+    plt.title(f"Градиентный спуск для\nнормализованной функции f2'(x, y) = x^2 + y^2")
+    show_2arg_func(scaled_func, scaled_dots, levels=False, contour=True, label="Траектория градиентного спуска")
+    print(f"Минимум нормализованной функции в точке {scaled_dots[-1]}")
+    print(f"Минимум в исходной функции в точке {np.dot(scaled_dots[-1], np.diag(1 / scale))}")
+
+
 def test_6(gradient_descent_name, gradient_descent):
     n_grid_size = 20
     k_grid_size = 20
@@ -182,22 +201,6 @@ def test_6(gradient_descent_name, gradient_descent):
     plt.xlabel("n")
     plt.ylabel("k")
     plt.show()
-
-
-def test_4d():
-    func_name, func, grad = get_simple_func(10)
-    scale = np.array([1 / 10 ** (1 / 2), 1])
-    scaled_func, scaled_grad = scale_func(scale, func, grad)
-    descent_name, descent = get_gradient_descent_constant(0.3)
-    start_dot = np.array([20, 20])
-    _, dots = descent(func, grad, start_dot)
-    _, scaled_dots = descent(scaled_func, scaled_grad, start_dot)
-    plt.title(f"Градиентный спуск для\nисходной функции f2(x, y) = 10x^2 + y^2")
-    show_2arg_func(func, dots, levels=False, contour=True, label="Траектория градиентного спуска")
-    plt.title(f"Градиентный спуск для\nнормализованной функции f2'(x, y) = x^2 + y^2")
-    show_2arg_func(scaled_func, scaled_dots, levels=False, contour=True, label="Траектория градиентного спуска")
-    print(f"Минимум scaled_func в точке {scaled_dots[-1]}")
-    print(f"Минимум в исходной функции в точке {np.dot(scaled_dots[-1], np.diag(1 / scale))}")
 
 
 def main():

@@ -37,19 +37,12 @@ def golden_section_method_with_wolfe_conditions(x: np.ndarray, grad: Callable[[n
             f_right = f_left
             med_left = left + (right - left) / (PHI + 1)
             f_left = f(x + med_left * direction)
-            # if (f_left <= f_x + c1 * med_left * np.dot(grad_value, direction) and
-            #         np.dot(grad(x + med_left * direction), direction) >= c2 * np.dot(grad_value, direction)):
-            #     return med_left
         else:
             left = med_left
             med_left = med_right
             f_left = f_right
             med_right = right - (right - left) / (PHI + 1)
             f_right = f(x + med_right * direction)
-            # if (f_right <= f_x + c1 * med_right * np.dot(grad_value, direction) and
-            #         np.dot(grad(x + med_right * direction), direction) >= c2 * np.dot(grad_value, direction)):
-            #     return med_right
-
         checkpoint = (left + right) / 2
         if (first_wolfe_condition(x, grad_value, direction, f_x, checkpoint, c1, f)
                 and second_wolfe_condition(x, grad_value, direction, checkpoint, c2, grad)):
