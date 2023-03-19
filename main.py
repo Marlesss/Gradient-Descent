@@ -1,5 +1,3 @@
-from matplotlib.patches import Patch
-
 from gradient_descent import *
 from square_function import generate_function
 from plot import *
@@ -44,6 +42,7 @@ def get_gradient_descent_linear():
 
 
 def main():
+    #     ans, dots = gradient_descent_linear_with_wolfe_condition(start_dot, grad, func, 0.01, 0.5)
     for func_name, func, grad in [get_short_func()]:
         for gradient_descent_name, gradient_descent in [
             #get_gradient_descent_constant(0.01),
