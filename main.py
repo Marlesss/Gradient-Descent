@@ -173,8 +173,8 @@ def test_4d():
 def test_6(gradient_descent_name, gradient_descent):
     n_grid_size = 20
     k_grid_size = 20
-    repeat_count = 3
-    random_dots = 6
+    repeat_count = 5
+    random_dots = 5
     n_space = np.linspace(2, 1000, n_grid_size)
     k_space = np.linspace(1, 1000, k_grid_size)
     data = [[None for _ in range(k_grid_size)] for _ in range(n_grid_size)]
